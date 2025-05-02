@@ -24,7 +24,7 @@ function animateLoginElements() {
         ease: 'power3.out'
     });
 
-    gsap.from('.login-header, .input-group, .remember-forgot, .login-btn, .login-footer', {
+    gsap.from('.login-header, .input-group, .remember-forgot, .login-btn', {
         y: 20,
         opacity: 0,
         duration: 0.8,

@@ -9,8 +9,40 @@ document.addEventListener('DOMContentLoaded', () => {
         renderLoginPage();
         animateLoginElements();
         setupTogglePassword();
+
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', (event) => {
+                handleLogin(auth, event);
+            }
+        );
     }
 });
+
+function handleLogin(auth, event) {
+    event.preventDefault();
+
+    const identity = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errDiv = document.getElementById('login-error');
+    
+    if (!identity || !password) {
+        errDiv.textContent = "Login details cannot be empty";
+        return;
+    }
+
+    const loginButton = document.querySelector('.login-btn');
+    const originalButtonText = loginButton.textContent;
+    loginButton.textContent = "Logging in...";
+    loginButton.disabled = true;
+
+    auth.login(identity, password);
+    // if (!result) {
+    //     console.log(result)
+    //     errDiv.textContent = "Error logging in contact administrator";
+    // }
+    loginButton.textContent = originalButtonText;
+    loginButton.disabled = false;
+}
 
 function renderLoginPage() {
     document.body.innerHTML = LoginUI.getTemplate();

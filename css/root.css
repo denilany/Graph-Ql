@@ -7,6 +7,7 @@
     --text-light: #777;
     --white: #fff;
     --shadow: rgba(0, 0, 0, 0.1);
+    --warning: #f01212;
 }
 
 * {

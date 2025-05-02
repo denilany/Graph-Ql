@@ -9,7 +9,8 @@ export class Auth {
         this.isAuthenticated = !!this.token;
     }
 
-    async login(identity, password, errDiv) {
+    async login(identity, password) {
+        
         try {
             const credentials = btoa(`${identity}:${password}`);
 
@@ -23,6 +24,7 @@ export class Auth {
 
             if (!response.ok) {
                 const errorData = response.json();
+                console.log(errorData)
                 throw new Error(errorData.error || "Invalid Credentials");
             }
 
@@ -37,8 +39,11 @@ export class Auth {
             this.isAuthenticated = true;
             return true;
         } catch (error) {
+            const errMsg = document.getElementById('login-error');
+            errMsg.style.display = 'block';
+            errMsg.textContent = "Invalid login credentials";
             console.error('Login error:', error);
-            errDiv.textcontent = 'Error logging in contact administrator';
+            return false;
         }
     }
 
@@ -62,7 +67,7 @@ export class Auth {
         return this.userId;
     }
 
-    _ParseUserId(token, errDiv) {
+    _ParseUserId(token) {
         try {
             const tokenParts = token.split('.');
             if (tokenParts.length !== 3) {
@@ -73,13 +78,12 @@ export class Auth {
             return payload.sub;
         } catch (error) {
             console.log('Error parsing JWT:', error);
-            errDiv.textcontent = 'Error logging in contact administrator';
+
+            const errMsg = document.getElementById('login-error');
+            errMsg.style.display = 'block';
+            errMsg.textcontent = 'Error logging in contact administrator';
             return null;
         }
     }
 }
-
-// function stripTags(input) {
-//     return input.replace(/<\/?[^>]+(>|$)/g, "");
-// }
   

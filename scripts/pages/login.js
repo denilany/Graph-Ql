@@ -8,7 +8,7 @@ export class LoginUI {
                     <h1>Hello Apprentice</h1>
                     <p>Welcome back</p>
                 </div>
-                <div id="login-error" class="error-message"></div>
+                <div id="login-error" class="error-message" style='display: none'></div>
                 <form id="login-form">
                     <div class="input-group">
                         <div class="input-icon">

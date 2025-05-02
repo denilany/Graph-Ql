@@ -39,9 +39,7 @@ export class Auth {
             this.isAuthenticated = true;
             return true;
         } catch (error) {
-            const errMsg = document.getElementById('login-error');
-            errMsg.style.display = 'block';
-            errMsg.textContent = "Invalid login credentials";
+            this.errMsg("Invalid login credentials");
             console.error('Login error:', error);
             return false;
         }
@@ -77,13 +75,18 @@ export class Auth {
             const payload = JSON.parse(atob(tokenParts[1]));
             return payload.sub;
         } catch (error) {
-            console.log('Error parsing JWT:', error);
+            console.error('Error parsing JWT:', error);
+            this.errMsg('Error logging in contact administrator');
 
-            const errMsg = document.getElementById('login-error');
-            errMsg.style.display = 'block';
-            errMsg.textcontent = 'Error logging in contact administrator';
             return null;
         }
+    }
+
+    errMsg(message) {
+        const errMsg = document.getElementById('login-error');
+        errMsg.style.display = 'block';
+        console.log(message);
+        errMsg.textContent = message;
     }
 }
   

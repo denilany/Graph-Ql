@@ -1,0 +1,17 @@
+:root {
+    --primary: #ff7f50;
+    --primary-light: #ffa07a;
+    --primary-dark: #e65c00;
+    --secondary: #fff8dc;
+    --text-dark: #333;
+    --text-light: #777;
+    --white: #fff;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}

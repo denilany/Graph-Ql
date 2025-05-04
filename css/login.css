@@ -55,7 +55,7 @@ body {
     margin-bottom: 1rem;
     /* margin-left: 1rem; */
     background-color: var(--primary-light);
-    color : var(--warning);
+    color : var(--danger);
     border-radius: 10px;
     font-weight: bold;
 }
@@ -135,19 +135,4 @@ input[type="password"]:focus {
 
 .login-btn:hover {
     background-color: var(--primary-dark);
-}
-
-@media (max-width: 480px) {
-    .login-card {
-        padding: 30px 20px;
-    }
-    
-    .login-header h1 {
-        font-size: 24px;
-    }
-    
-    input[type="text"],
-    input[type="password"] {
-        padding: 12px 45px;
-    }
 }

@@ -7,7 +7,12 @@
     --text-light: #777;
     --white: #fff;
     --shadow: rgba(0, 0, 0, 0.1);
-    --warning: #f01212;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #17a2b8;
+    --gray: #f8f9fa;
+    --gray-dark: #343a40;
 }
 
 * {

@@ -19,6 +19,35 @@ document.addEventListener('DOMContentLoaded', () => {
             await handleLogin(auth, event);
         });
     }
+
+    // Set dashboard navigation
+    const navItems = document.querySelectorAll('.sidebar-nav li');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            navItems.forEach(navItem => navItem.classList.remove('active'));
+
+            item.classList.add('active');
+
+            const sectionId = item.getAttribute('data-section');
+            document.querySelectorAll('dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`${sectionId}-section`).classList.add('active');
+        });
+    });
+
+    // Hamburger menu toggle for mobile
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
+    const sidebarNav = document.querySelector('.sidebar-nav');
+
+    hamburgerMenu.addEventListener('click', () => {
+        sidebarNav.classList.toggle('open');
+    });
+
+    // Logout button
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        Auth.logout();
+    })
 });
 
 async function handleLogin(auth, event) {

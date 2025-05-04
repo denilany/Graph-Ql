@@ -10,44 +10,46 @@ document.addEventListener('DOMContentLoaded', () => {
         renderLoginPage();
         animateLoginElements();
         setupTogglePassword();
-    }
-    
-    
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', async (event) => {
-            await handleLogin(auth, event);
-        });
-    }
 
-    // Set dashboard navigation
-    const navItems = document.querySelectorAll('.sidebar-nav li');
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (event) => {
+                await handleLogin(auth, event);
+            });
+        }
+    } else {
+        State.switchToDashboard();
+
+        // Set dashboard navigation
+        const navItems = document.querySelectorAll('.sidebar-nav li');
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             navItems.forEach(navItem => navItem.classList.remove('active'));
-
+            
             item.classList.add('active');
-
+            
             const sectionId = item.getAttribute('data-section');
-            document.querySelectorAll('dashboard-section').forEach(section => {
+            document.querySelectorAll('.dashboard-section').forEach(section => {
                 section.classList.remove('active');
             });
             document.getElementById(`${sectionId}-section`).classList.add('active');
         });
     });
 
-    // Hamburger menu toggle for mobile
-    const hamburgerMenu = document.querySelector('.hamburger-menu');
-    const sidebarNav = document.querySelector('.sidebar-nav');
+        // Hamburger menu toggle for mobile
+        const hamburgerMenu = document.querySelector('.hamburger-menu');
+        const sidebarNav = document.querySelector('.sidebar-nav');
 
-    hamburgerMenu.addEventListener('click', () => {
-        sidebarNav.classList.toggle('open');
-    });
+        hamburgerMenu.addEventListener('click', () => {
+            sidebarNav.classList.toggle('open');
+        });
 
-    // Logout button
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        Auth.logout();
-    })
+        // Logout button
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            auth.logout();
+            renderLoginPage();
+        });
+    }    
 });
 
 async function handleLogin(auth, event) {

@@ -1,6 +1,7 @@
 import { LoginUI } from "./pages/login.js";
 import { Auth } from "./auth.js";
 import { gsap } from 'gsap';
+import * as State from './state.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const auth = new Auth();
@@ -9,40 +10,57 @@ document.addEventListener('DOMContentLoaded', () => {
         renderLoginPage();
         animateLoginElements();
         setupTogglePassword();
-
-        const loginForm = document.getElementById('login-form');
-        loginForm.addEventListener('submit', (event) => {
-                handleLogin(auth, event);
-            }
-        );
+    }
+    
+    
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (event) => {
+            await handleLogin(auth, event);
+        });
     }
 });
 
-function handleLogin(auth, event) {
+async function handleLogin(auth, event) {
     event.preventDefault();
 
-    const identity = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const identity = document.getElementById('username')?.value?.trim();
+    const password = document.getElementById('password')?.value?.trim();
     const errDiv = document.getElementById('login-error');
-    
+
     if (!identity || !password) {
-        errDiv.textContent = "Login details cannot be empty";
+        if (errDiv) errDiv.textContent = "Login details cannot be empty";
         return;
     }
 
     const loginButton = document.querySelector('.login-btn');
-    const originalButtonText = loginButton.textContent;
-    loginButton.textContent = "Logging in...";
-    loginButton.disabled = true;
+    const originalButtonText = loginButton?.textContent;
 
-    auth.login(identity, password);
-    // if (!result) {
-    //     console.log(result)
-    //     errDiv.textContent = "Error logging in contact administrator";
-    // }
-    loginButton.textContent = originalButtonText;
-    loginButton.disabled = false;
+    if (loginButton) {
+        loginButton.textContent = "Logging in...";
+        loginButton.disabled = true;
+    }
+
+    try {
+        const success = await auth.login(identity, password);
+
+        if (success) {
+            State.switchToDashboard();
+            console.log("Login successful");
+        } else {
+            if (errDiv) errDiv.textContent = "Login failed. Please try again.";
+        }
+    } catch (err) {
+        console.error("Unexpected error:", err);
+        if (errDiv) errDiv.textContent = err.message || "Unexpected error";
+    } finally {
+        if (loginButton) {
+            loginButton.textContent = originalButtonText;
+            loginButton.disabled = false;
+        }
+    }
 }
+
 
 function renderLoginPage() {
     document.body.innerHTML = LoginUI.getTemplate();

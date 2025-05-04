@@ -1,4 +1,4 @@
-export class Dashboard {
+export class DashboardContent {
     static getTemplate() {
         return `
         <div class="main-content">

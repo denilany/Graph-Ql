@@ -29,18 +29,24 @@ export class Auth {
             }
 
             const token = await response.json();
+
+            const userId = this._ParseUserId(token);
+            if (!userId) {
+                console.error('Invalid token: could not extract user ID');
+                throw new Error('Error logging in contact administrator');
+            }
+
+
             this.token = token;
-            console.log("token: ", token);
+            this.userId = userId;
+            this.isAuthenticated = true;
 
             localStorage.setItem(AUTH_TOKEN_KEY, this.token);
-
-            this.userId = this._ParseUserId(this.token);
             localStorage.setItem(AUTH_USER_ID_KEY, this.userId);
 
-            this.isAuthenticated = true;
             return true;
         } catch (error) {
-            this.errMsg("Invalid login credentials");
+            this.errMsg(error.message || "Invalid login credentials");
             console.error('Login error:', error);
             return false;
         }
@@ -67,20 +73,19 @@ export class Auth {
     }
 
     _ParseUserId(token) {
-        try {
-            const tokenParts = token.split('.');
-            if (tokenParts.length !== 3) {
-                throw new Error('Invalid token format');
-            }
-
-            const payload = JSON.parse(atob(tokenParts[1]));
-            return payload.sub;
-        } catch (error) {
-            console.error('Error parsing JWT:', error);
-            this.errMsg('Error logging in contact administrator');
-
+        const tokenParts = token.split('.');
+        if (tokenParts.length !== 3) {
+            console.error('Invalid token format');
             return null;
         }
+
+        const payload = JSON.parse(atob(tokenParts[1]));
+        if (!payload.sub) {
+            console.error('Token does not contain user ID (sub)');
+            return null;
+        }
+
+        return payload.sub;
     }
 
     errMsg(message) {

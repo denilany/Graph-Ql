@@ -23,17 +23,18 @@ export class Auth {
             });
 
             if (!response.ok) {
-                const errorData = response.json();
+                const errorData = await response.json();
                 console.log(errorData)
                 throw new Error(errorData.error || "Invalid Credentials");
             }
 
-            const token = response.json();
+            const token = await response.json();
             this.token = token;
+            console.log("token: ", token);
 
             localStorage.setItem(AUTH_TOKEN_KEY, this.token);
 
-            this.userId = this._ParseUserId(this.token, errDiv);
+            this.userId = this._ParseUserId(this.token);
             localStorage.setItem(AUTH_USER_ID_KEY, this.userId);
 
             this.isAuthenticated = true;

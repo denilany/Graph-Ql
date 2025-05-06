@@ -1,7 +1,7 @@
 export class GraphQLService {
     constructor(token) {
         this.endpoint = 'https://learn.zone01kisumu.ke/api/graphql-engine/v1/graphql';
-        this.token = token;
+        this.token = localStorage.getItem('auth_token') || null;
     }
 
     async query(queryString, variables = {}) {
@@ -53,25 +53,19 @@ export class GraphQLService {
     // Get user XP
     async getUserXP() {
         const query = `
-            query {
-                user {
-                    id
-                    transactions(where: {type: {_eq: "xp"}, eventId: {_nlike: "%piscine%"}}) {
-                        id
-                        amount
-                        createdAt
-                        objectId
-                        object {
-                            name
-                        }
+            {
+                transaction(
+                    where: {
+                        _and: [
+                            { type: { _eq: "xp" } },
+                            { eventId: { _eq: 75 } }
+                        ]
                     }
-                    totalXp: transactions_aggregate(where: {type: {_eq: "xp"}, eventId: {_nlike: "%piscine%"}}) {
-                        aggregate {
-                            sum {
-                                amount
-                            }
-                        }
-                    }
+                ) {
+                    path
+                    amount
+                    type
+                    createdAt
                 }
             }
         `;
@@ -81,26 +75,15 @@ export class GraphQLService {
     // Get completed projects
     async getCompletedProjects() {
         const query = `
-            query {
-                user {
-                    id
-                    progresses(where: {isDone: {_eq: true}, grade: {_gt: 0}}) {
-                        id
-                        object {
-                            id
-                            name
-                        }
-                        grade
-                        createdAt
-                        updatedAt
-                        isDone
-                    }
-                    completedProjects: progresses_aggregate(where: {isDone: {_eq: true}, grade: {_gt: 0}}) {
-                        aggregate {
-                            count
-                        }
-                    }
+            pendingProgress: progress(
+                where: {
+                    isDone: { _eq: false },
+                    eventId: { _eq: 75 },
+                    id: { _neq: 145124 }
                 }
+            ) {
+                createdAt
+                path
             }
         `;
         return this.query(query);

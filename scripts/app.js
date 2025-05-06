@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         Dashboard.switchToDashboard();
 
+        Dashboard.loadUserData();
+
         // Set dashboard navigation
         const navItems = document.querySelectorAll('.sidebar-nav li');
         navItems.forEach(item => {

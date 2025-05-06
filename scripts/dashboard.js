@@ -19,3 +19,4 @@ export function switchToDashboard() {
         ease: 'power2.out'
     });
 }
+

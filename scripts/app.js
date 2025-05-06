@@ -1,7 +1,7 @@
 import { LoginUI } from "./pages/login.js";
 import { Auth } from "./auth.js";
 import { gsap } from 'gsap';
-import * as State from './state.js';
+import * as Dashboard from './dashboard.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const auth = new Auth();
@@ -18,23 +18,23 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     } else {
-        State.switchToDashboard();
+        Dashboard.switchToDashboard();
 
         // Set dashboard navigation
         const navItems = document.querySelectorAll('.sidebar-nav li');
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            navItems.forEach(navItem => navItem.classList.remove('active'));
-            
-            item.classList.add('active');
-            
-            const sectionId = item.getAttribute('data-section');
-            document.querySelectorAll('.dashboard-section').forEach(section => {
-                section.classList.remove('active');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(navItem => navItem.classList.remove('active'));
+                
+                item.classList.add('active');
+                
+                const sectionId = item.getAttribute('data-section');
+                document.querySelectorAll('.dashboard-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(`${sectionId}-section`).classList.add('active');
             });
-            document.getElementById(`${sectionId}-section`).classList.add('active');
         });
-    });
 
         // Hamburger menu toggle for mobile
         const hamburgerMenu = document.querySelector('.hamburger-menu');
@@ -76,7 +76,8 @@ async function handleLogin(auth, event) {
         const success = await auth.login(identity, password);
 
         if (success) {
-            State.switchToDashboard();
+            Dashboard.switchToDashboard();
+            location.reload();
             console.log("Login successful");
         } else {
             if (errDiv) errDiv.textContent = "Login failed. Please try again.";
@@ -95,6 +96,12 @@ async function handleLogin(auth, event) {
 
 function renderLoginPage() {
     document.body.innerHTML = LoginUI.getTemplate();
+    // Clear inputs
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    if (usernameInput) usernameInput.value = "";
+    if (passwordInput) passwordInput.value = "";
 }
 
 function animateLoginElements() {

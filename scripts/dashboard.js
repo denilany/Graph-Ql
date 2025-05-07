@@ -32,7 +32,8 @@ export async function loadUserData() {
     console.log('user: ', user);
 
     try {
-        updateProfile(user, humanReadable_XP);
+        await updateProfile(user, humanReadable_XP);
+        await completedProjects()
     } catch (error) {
         console.log('Error loading data: ', error);
     }
@@ -43,7 +44,7 @@ async function totalXP() {
         const xp_response = await GraphQl.getUserXP();
 
         if (!xp_response || !Array.isArray(xp_response.transaction)) {
-            throw new Error("Invalid response format");
+            throw new Error("Invalid response format: ", xp_response.message);
         }
 
         const totalXP = xp_response.transaction.reduce((sum, t) => sum + (t.amount || 0), 0);
@@ -64,8 +65,24 @@ async function totalXP() {
     }
 }
 
+async function completedProjects() {
+    try {
+        const projectsResponse = await GraphQl.getCompletedProjects();
 
-function updateProfile(user, humanReadable_XP) {
+        if (!projectsResponse) {
+            throw new Error("Invalid response format: ", projectsResponse.message);
+        }
+
+        return projectsResponse.pendingProgress.length.toString();
+
+    } catch (error) {
+        console.error("Failed to fetch completed projects: ", error);
+        return "0";
+    }
+}
+
+
+async function updateProfile(user, humanReadable_XP) {
     document.getElementById('user-greeting').textContent = `Hello, ${user.attrs.firstName}`;
     document.getElementById('profile-name').textContent = `${user.login}`;
     document.getElementById('profile-email').textContent = user.email;

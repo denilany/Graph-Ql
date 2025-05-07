@@ -1,5 +1,5 @@
 export class GraphQLService {
-    constructor(token) {
+    constructor() {
         this.endpoint = 'https://learn.zone01kisumu.ke/api/graphql-engine/v1/graphql';
         this.token = localStorage.getItem('auth_token') || null;
     }
@@ -75,15 +75,17 @@ export class GraphQLService {
     // Get completed projects
     async getCompletedProjects() {
         const query = `
-            pendingProgress: progress(
-                where: {
-                    isDone: { _eq: false },
-                    eventId: { _eq: 75 },
-                    id: { _neq: 145124 }
-                }
-            ) {
-                createdAt
-                path
+            {
+                pendingProgress: progress(
+                                where: {
+                                    isDone: { _eq: true },
+                                    eventId: { _eq: 75 },
+                                    id: { _neq: 145124 }
+                                }
+                            ) {
+                                createdAt
+                                path
+                            }
             }
         `;
         return this.query(query);

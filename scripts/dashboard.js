@@ -2,6 +2,8 @@ import { Dashboard } from "./pages/dashboard.js"
 import { GraphQLService } from './graphql.js';
 import { gsap } from 'gsap';
 
+const GraphQl = new GraphQLService();
+
 export function switchToDashboard() {
     document.body.innerHTML = "";
     document.body.innerHTML = Dashboard.getTemplate();
@@ -22,14 +24,9 @@ export function switchToDashboard() {
 }
 
 export async function loadUserData() {
-    const GraphQl = new GraphQLService();
 
     const response = await GraphQl.getUserInfo();
-    const xp_response = await GraphQl.getUserXP();
-    const totalXP = xp_response.transaction.reduce((sum, t) => sum + t.amount, 0);
-    let humanReadable_XP = totalXP >= 1000000 ? (totalXP / 1000000).toFixed(2) : 
-                            totalXP >= 1000 ? (totalXP / 1000).toFixed(2) : totalXP.toFixed(2);
-    console.log("readable: ", humanReadable_XP);
+    const humanReadable_XP = await totalXP();
 
     const user = response.user[0];
     console.log('user: ', user);
@@ -41,11 +38,38 @@ export async function loadUserData() {
     }
 }
 
+async function totalXP() {
+    try {
+        const xp_response = await GraphQl.getUserXP();
+
+        if (!xp_response || !Array.isArray(xp_response.transaction)) {
+            throw new Error("Invalid response format");
+        }
+
+        const totalXP = xp_response.transaction.reduce((sum, t) => sum + (t.amount || 0), 0);
+
+        let humanReadable_XP;
+        if (totalXP >= 1_000_000) {
+            humanReadable_XP = (totalXP / 1_000_000).toFixed(2) + 'MB';
+        } else if (totalXP >= 1_000) {
+            humanReadable_XP = (totalXP / 1_000).toFixed(2) + 'KB';
+        } else {
+            humanReadable_XP = totalXP.toFixed(2);
+        }
+
+        return humanReadable_XP;
+    } catch (error) {
+        console.error("Failed to fetch total XP:", error);
+        return "0.00";
+    }
+}
+
+
 function updateProfile(user, humanReadable_XP) {
     document.getElementById('user-greeting').textContent = `Hello, ${user.attrs.firstName}`;
     document.getElementById('profile-name').textContent = `${user.login}`;
     document.getElementById('profile-email').textContent = user.email;
-    document.getElementById('profile-xp').textContent = `${humanReadable_XP.toLocaleString()}` + ' XP';
+    document.getElementById('profile-xp').textContent = `${humanReadable_XP}`;
     // document.getElementById('profile-projects').textContent = `${stats.projects.completed}/${stats.projects.total}`;
     // document.getElementById('profile-audit-ratio').textContent = stats.audits.ratio.toFixed(2);
 }

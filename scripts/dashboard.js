@@ -4,38 +4,19 @@ import { gsap } from 'gsap';
 
 const GraphQl = new GraphQLService();
 
-export function switchToDashboard() {
-    document.body.innerHTML = "";
-    document.body.innerHTML = Dashboard.getTemplate();
-
-    gsap.from('#dashboard-container', {
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power3.out'
-    });
-
-    gsap.from('.sidebar, .main-content', {
-        x: -30,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'power2.out'
-    });
-}
-
-export async function loadUserData() {
-
-    const response = await GraphQl.getUserInfo();
-    const humanReadable_XP = await totalXP();
-
-    const user = response.user[0];
-    console.log('user: ', user);
-
+async function completedProjects() {
     try {
-        await updateProfile(user, humanReadable_XP);
-        await completedProjects()
+        const projectsResponse = await GraphQl.getCompletedProjects();
+
+        if (!projectsResponse) {
+            throw new Error("Invalid response format: ", projectsResponse.message);
+        }
+
+        return projectsResponse.pendingProgress.length.toString();
+
     } catch (error) {
-        console.log('Error loading data: ', error);
+        console.error("Failed to fetch completed projects: ", error);
+        return "0";
     }
 }
 
@@ -65,28 +46,53 @@ async function totalXP() {
     }
 }
 
-async function completedProjects() {
+export async function loadUserData() {
+
+    const response = await GraphQl.getUserInfo();
+    const humanReadable_XP = await totalXP();
+    const projectStats = await completedProjects();
+    const ratio = await GraphQl.getUserAudits();
+    console.log("ratio: ", ratio.user[0].auditRatio);
+
+    const user = response.user[0];
+
+    const stats = {
+        "xp": humanReadable_XP,
+        "projects": projectStats,
+        "auditRatio": ratio.user[0].auditRatio,
+    }
+
     try {
-        const projectsResponse = await GraphQl.getCompletedProjects();
-
-        if (!projectsResponse) {
-            throw new Error("Invalid response format: ", projectsResponse.message);
-        }
-
-        return projectsResponse.pendingProgress.length.toString();
-
+        await updateProfile(user, stats);
     } catch (error) {
-        console.error("Failed to fetch completed projects: ", error);
-        return "0";
+        console.log('Error loading data: ', error);
     }
 }
 
+export function switchToDashboard() {
+    document.body.innerHTML = "";
+    document.body.innerHTML = Dashboard.getTemplate();
 
-async function updateProfile(user, humanReadable_XP) {
+    gsap.from('#dashboard-container', {
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out'
+    });
+
+    gsap.from('.sidebar, .main-content', {
+        x: -30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: 'power2.out'
+    });
+}
+
+async function updateProfile(user, stats) {
     document.getElementById('user-greeting').textContent = `Hello, ${user.attrs.firstName}`;
     document.getElementById('profile-name').textContent = `${user.login}`;
     document.getElementById('profile-email').textContent = user.email;
-    document.getElementById('profile-xp').textContent = `${humanReadable_XP}`;
-    // document.getElementById('profile-projects').textContent = `${stats.projects.completed}/${stats.projects.total}`;
-    // document.getElementById('profile-audit-ratio').textContent = stats.audits.ratio.toFixed(2);
+    document.getElementById('profile-xp').textContent = `${stats.xp}`;
+    document.getElementById('profile-projects').textContent = `${stats.projects}`;
+    document.getElementById('profile-audit-ratio').textContent = stats.auditRatio.toFixed(1);
 }

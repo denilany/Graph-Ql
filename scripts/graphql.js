@@ -94,37 +94,12 @@ export class GraphQLService {
     // Get user audits
     async getUserAudits() {
         const query = `
-            query {
-                user {
-                    id
-                    auditsGiven: transactions_aggregate(where: {type: {_eq: "up"}, eventId: {_like: "%audit%"}}) {
-                        aggregate {
-                            count
-                        }
-                    }
-                    auditsReceived: transactions_aggregate(where: {type: {_eq: "down"}, eventId: {_like: "%audit%"}}) {
-                        aggregate {
-                            count
-                        }
-                    }
-                    auditsDone: audits {
-                        id
-                        grade
-                        createdAt
-                        object {
-                            name
-                        }
-                    }
-                    auditsReceivedDetails: audited {
-                        id
-                        grade
-                        createdAt
-                        object {
-                            name
-                        }
-                    }
-                }
+        {
+            user {
+                auditRatio
             }
+        }
+                    
         `;
         return this.query(query);
     }

@@ -120,13 +120,14 @@ export class GraphQLService {
                 user {
                     id
                     skills: transactions(
-                    where: {type: {_like: "skill_%"}}
-                    order_by: [{amount: desc}]
+                        where: { type: { _like: "skill_%" } }
+                        order_by: [{ amount: desc }]
                     ) {
-                    type
-                    amount
+                        type
+                        amount
                     }
                 }
+                
             }
         `;
         return this.query(query);

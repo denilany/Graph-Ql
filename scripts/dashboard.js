@@ -34,9 +34,6 @@ async function getUserData() {
         const received = transactions
             .filter((t) => t.type === "down")
             .reduce((sum, t) => sum + t.amount, 0);
-
-
-        console.log("total done: ", allXp);
         
         return {
             id: user.id,
@@ -168,10 +165,12 @@ export async function loadUserData() {
     }
 
     const userData = await getUserData();
+    const skills = await GraphQl.getUserSkills();
 
     try {
         await updateProfile(stats, userData);
-        await updateAudits(userData)
+        await updateAudits(userData);
+        await updateSkillsChart(skills);
     } catch (error) {
         console.log('Error loading data: ', error);
     }
@@ -207,36 +206,77 @@ async function updateProfile(stats, userData) {
 }
 
 // Update skills chart
-function updateSkillsChart(skills) {
-    const skillsChart = document.getElementById('skills-chart');
-    skillsChart.innerHTML = '';
-    
-    skills.forEach(skill => {
-        const skillContainer = document.createElement('div');
-        skillContainer.className = 'skill-item';
-        
-        const skillLabel = document.createElement('div');
-        skillLabel.className = 'skill-label';
-        skillLabel.innerHTML = `
-            <span class="skill-name">${skill.name}</span>
-            <span class="skill-value">${skill.value}%</span>
-        `;
-        
-        const skillBar = document.createElement('div');
-        skillBar.className = 'skill-bar';
-        
-        const skillProgress = document.createElement('div');
-        skillProgress.className = 'skill-progress';
-        skillProgress.style.width = '0%';
-        
-        skillBar.appendChild(skillProgress);
-        skillContainer.appendChild(skillLabel);
-        skillContainer.appendChild(skillBar);
-        skillsChart.appendChild(skillContainer);
-        
-        // Animate skill progress after a small delay
-        setTimeout(() => {
-            skillProgress.style.width = `${skill.value}%`;
-        }, 300);
-    });
+function updateSkillsChart(userData) {
+    const skillsSection = document.getElementById("skills-section");
+    const skillsChart = document.getElementById("skills-chart");
+    const skills = userData.user[0].skills;
+
+    if (!skills || skills.length === 0) {
+        skillsChart.innerHTML = "<p>No skills data available yet</p>";
+        return;
+    }
+
+    // Group skills by category based on type (e.g., "prog")
+    const groupedSkills = skills.reduce((acc, skill) => {
+        const category = skill.type.replace("skill_", "");
+
+        if (!acc[category]) {
+            acc[category] = {
+                amount: 0,
+                skills: [],
+            };
+        }
+
+        acc[category].amount += skill.amount;
+        acc[category].skills.push(skill);
+        return acc;
+    }, {});
+
+    // Get total amount of all skills to calculate the relative progress
+    const totalAmount = Object.values(groupedSkills).reduce(
+        (sum, group) => sum + group.amount,
+        0
+    );
+
+    skillsChart.innerHTML = ''; // Clear previous skills if any
+
+    // Sort categories by total amount
+    Object.entries(groupedSkills)
+        .sort(([, a], [, b]) => b.amount - a.amount)
+        .forEach(([category, data]) => {
+            const skillCategoryContainer = document.createElement('div');
+            skillCategoryContainer.className = 'skill-category';
+
+            // Create label for the category
+            const categoryLabel = document.createElement('div');
+            categoryLabel.className = 'skill-label';
+            categoryLabel.innerHTML = `
+                <span class="skill-name">${category.toUpperCase()}</span>
+                <span class="skill-value">${Math.round((data.amount / totalAmount) * 100)}%</span>
+            `;
+
+            // Create the progress bar container
+            const skillProgressBar = document.createElement('div');
+            skillProgressBar.className = 'skill-bar';
+
+            // Create the actual progress bar
+            const skillProgress = document.createElement('div');
+            skillProgress.className = 'skill-progress';
+            const percentage = (data.amount / totalAmount) * 100; // Calculate percentage
+            skillProgress.style.width = '0%'; // Start with 0 width for animation
+
+            // Append progress bar to category container
+            skillProgressBar.appendChild(skillProgress);
+            skillCategoryContainer.appendChild(categoryLabel);
+            skillCategoryContainer.appendChild(skillProgressBar);
+
+            // Append the skill category container to the chart
+            skillsChart.appendChild(skillCategoryContainer);
+
+            // Animate skill progress after a small delay
+            setTimeout(() => {
+                skillProgress.style.width = `${percentage}%`;
+            }, 300);
+        });
 }
+

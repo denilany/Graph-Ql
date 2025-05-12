@@ -100,7 +100,7 @@ export class DashboardContent {
                     <div class="audits-summary">
                         <div class="detail-card">
                             <i class="fas fa-upload"></i>
-                            <h4>Given</h4>
+                            <h4>Done</h4>
                             <p id="audits-given">Loading...</p>
                         </div>
                         <div class="detail-card">

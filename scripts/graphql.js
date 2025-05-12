@@ -44,7 +44,16 @@ export class GraphQLService {
                     login
                     email
                     attrs
+                    auditRatio
+                    
                 }
+                transaction(where: {_and: [{eventId:{_eq: 75}},]}, order_by: {createdAt: desc}) {
+                    amount
+                    createdAt
+                    path
+                    type
+                }
+                
             }
         `;
         return this.query(query);
@@ -107,16 +116,15 @@ export class GraphQLService {
     // Get user skills
     async getUserSkills() {
         const query = `
-            query {
+            {
                 user {
                     id
-                    transactions(where: {type: {_eq: "skill"}}) {
-                        id
-                        amount
-                        object {
-                            id
-                            name
-                        }
+                    skills: transactions(
+                    where: {type: {_like: "skill_%"}}
+                    order_by: [{amount: desc}]
+                    ) {
+                    type
+                    amount
                     }
                 }
             }

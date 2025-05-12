@@ -95,7 +95,6 @@ async function handleLogin(auth, event) {
     }
 }
 
-
 function renderLoginPage() {
     document.body.innerHTML = LoginUI.getTemplate();
     // Clear inputs

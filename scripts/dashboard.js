@@ -35,6 +35,8 @@ async function getUserData() {
             .filter((t) => t.type === "down")
             .reduce((sum, t) => sum + t.amount, 0);
         
+        // console.log("Birth: ", attrs?.dateOfBirth);
+
         return {
             id: user.id,
             login: user.login,
@@ -207,7 +209,8 @@ async function updateProfile(stats, userData) {
 
 // Update skills chart
 function updateSkillsChart(userData) {
-    const skillsSection = document.getElementById("skills-section");
+    console.log("userdata: ", userData);
+
     const skillsChart = document.getElementById("skills-chart");
     const skills = userData.user[0].skills;
 
@@ -216,66 +219,61 @@ function updateSkillsChart(userData) {
         return;
     }
 
-    // Group skills by category based on type (e.g., "prog")
-    const groupedSkills = skills.reduce((acc, skill) => {
-        const category = skill.type.replace("skill_", "");
+    // 1. Extract highest amount per skill type
+    const highestSkillsMap = new Map();
+    for (const skill of skills) {
+        const existing = highestSkillsMap.get(skill.type);
+        if (!existing || skill.amount > existing.amount) {
+            highestSkillsMap.set(skill.type, skill);
+        }
+    }
 
+    const uniqueMaxSkills = Array.from(highestSkillsMap.values());
+
+    // 2. Group by category ("skill_prog" → "prog")
+    const groupedSkills = uniqueMaxSkills.reduce((acc, skill) => {
+        const category = skill.type.replace("skill_", "");
         if (!acc[category]) {
             acc[category] = {
                 amount: 0,
                 skills: [],
             };
         }
-
         acc[category].amount += skill.amount;
         acc[category].skills.push(skill);
         return acc;
     }, {});
 
-    // Get total amount of all skills to calculate the relative progress
-    const totalAmount = Object.values(groupedSkills).reduce(
-        (sum, group) => sum + group.amount,
-        0
-    );
+    skillsChart.innerHTML = '';
 
-    skillsChart.innerHTML = ''; // Clear previous skills if any
-
-    // Sort categories by total amount
+    // 3. Render each skill group
     Object.entries(groupedSkills)
         .sort(([, a], [, b]) => b.amount - a.amount)
         .forEach(([category, data]) => {
             const skillCategoryContainer = document.createElement('div');
             skillCategoryContainer.className = 'skill-category';
 
-            // Create label for the category
             const categoryLabel = document.createElement('div');
             categoryLabel.className = 'skill-label';
             categoryLabel.innerHTML = `
                 <span class="skill-name">${category.toUpperCase()}</span>
-                <span class="skill-value">${Math.round((data.amount / totalAmount) * 100)}%</span>
+                <span class="skill-value">${data.amount}%</span>
             `;
 
-            // Create the progress bar container
             const skillProgressBar = document.createElement('div');
             skillProgressBar.className = 'skill-bar';
 
-            // Create the actual progress bar
             const skillProgress = document.createElement('div');
             skillProgress.className = 'skill-progress';
-            const percentage = (data.amount / totalAmount) * 100; // Calculate percentage
-            skillProgress.style.width = '0%'; // Start with 0 width for animation
+            skillProgress.style.width = '0%';
 
-            // Append progress bar to category container
             skillProgressBar.appendChild(skillProgress);
             skillCategoryContainer.appendChild(categoryLabel);
             skillCategoryContainer.appendChild(skillProgressBar);
-
-            // Append the skill category container to the chart
             skillsChart.appendChild(skillCategoryContainer);
 
-            // Animate skill progress after a small delay
             setTimeout(() => {
-                skillProgress.style.width = `${percentage}%`;
+                skillProgress.style.width = `${data.amount}%`;
             }, 300);
         });
 }

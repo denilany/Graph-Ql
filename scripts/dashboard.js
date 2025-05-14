@@ -1,6 +1,8 @@
 import { Dashboard } from "./pages/dashboard.js"
 import { GraphQLService } from './graphql.js';
+import * as graph from './graph.js';
 import { gsap } from 'gsap';
+// import { d3 } from 'd3';
 
 const GraphQl = new GraphQLService();
 
@@ -128,7 +130,7 @@ async function updateAudits(auditStats) {
     // });
 }
 
-function updateGraph(graphType) {
+async function updateGraph(graphType) {
     const svg = d3.select('#stats-graph');
     svg.selectAll('*').remove();
     
@@ -140,20 +142,22 @@ function updateGraph(graphType) {
 
     const g = svg.append('g')
         .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
         
     switch (graphType) {
         case 'xp-progress':
-            createLineChart(g, mockData.stats.xpProgress, innerWidth, innerHeight);
+            const xpProgress = await fetchXPProgressData();
+            graph.createLineChart(g, xpProgress, innerWidth, innerHeight);
             break;
-        case 'project-xp':
-            createBarChart(g, mockData.stats.projectXP, innerWidth, innerHeight);
-            break;
-        case 'audit-ratio':
-            createPieChart(g, mockData.stats.audits, innerWidth, innerHeight);
-            break;
-        case 'project-ratio':
-            createDonutChart(g, mockData.stats.projects, innerWidth, innerHeight);
-            break;
+        // case 'project-xp':
+        //     createBarChart(g, mockData.stats.projectXP, innerWidth, innerHeight);
+        //     break;
+        // case 'audit-ratio':
+        //     createPieChart(g, mockData.stats.audits, innerWidth, innerHeight);
+        //     break;
+        // case 'project-ratio':
+        //     createDonutChart(g, mockData.stats.projects, innerWidth, innerHeight);
+        //     break;
     }
 }
 
@@ -168,14 +172,34 @@ export async function loadUserData() {
 
     const userData = await getUserData();
     const skills = await GraphQl.getUserSkills();
+    const userResponse = await GraphQl.getUserInfo();
 
     try {
         await updateProfile(stats, userData);
         await updateAudits(userData);
-        await updateSkillsChart(skills);
+        updateSkillsChart(skills);
+        await updateGraph('xp-progress');
     } catch (error) {
         console.log('Error loading data: ', error);
     }
+}
+
+async function fetchXPProgressData() {
+    const response = await GraphQl.getUserXP();
+    const transactions = response.transaction;
+
+    const dateXPMap = {};
+
+    transactions.forEach(tx => {
+        const date = tx.createdAt.split("T")[0];
+        const amount = parseInt(tx.amount);
+        if (!dateXPMap[date]) dateXPMap[date] = 0;
+        dateXPMap[date] += amount;
+    });
+
+    return Object.entries(dateXPMap)
+        .map(([date, xp]) => ({ date: new Date(date), xp }))
+        .sort((a, b) => a.date - b.date);
 }
 
 export function switchToDashboard() {

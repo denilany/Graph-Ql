@@ -130,23 +130,22 @@ async function updateAudits(auditStats) {
     // });
 }
 
-async function updateGraph(graphType, data) {
+export function updateGraph(graphType, data) {
     const container = document.getElementById('graph-container');
+    container.innerText = "";
 
     try {
         switch (graphType) {
             case 'xp-progress':
                 Graph.createLineGraph(data, container);
                 break;
+            case 'project-ratio':
+                Graph.createPieChart(data, container);
+                break;
             
         }
     } catch (error) {
         console.error('Error updating graph:', error);
-        g.append('text')
-            .attr('x', innerWidth / 2)
-            .attr('y', innerHeight / 2)
-            .attr('text-anchor', 'middle')
-            .text('Error loading graph data');
     }
 }
 
@@ -161,60 +160,16 @@ export async function loadUserData() {
 
     const userData = await getUserData();
     const skills = await GraphQl.getUserSkills();
-    const userResponse = await GraphQl.getUserInfo();
-    const selector = document.getElementById("graph-selector").value;
 
     try {
         await updateProfile(stats, userData);
         await updateAudits(userData);
         updateSkillsChart(skills);
-
-        selector.addEventListener('change', async function () {
-            const selectedValue = selector.value;
-            await updateGraph(selectedValue, userResponse);
-            console.log("Selected value:", selectedValue);
-        });
         
     } catch (error) {
         console.log('Error loading data: ', error);
     }
 }
-
-// async function fetchXPProgressData() {
-//     const response = await GraphQl.getUserXP();
-//     const transactions = response.transaction;
-
-//     const dateXPMap = {};
-
-//     transactions.forEach(tx => {
-//         const date = tx.createdAt.split("T")[0];
-//         const amount = parseInt(tx.amount);
-//         if (!dateXPMap[date]) dateXPMap[date] = 0;
-//         dateXPMap[date] += amount;
-//     });
-
-//     return Object.entries(dateXPMap)
-//         .map(([date, xp]) => ({ date: new Date(date), xp }))
-//         .sort((a, b) => a.date - b.date);
-// }
-
-// async function fetchProjectXPData() {
-//     const response = await GraphQl.getUserXP();
-//     const transactions = response.transaction;
-
-//     const projectXPMap = {};
-
-//     transactions.forEach(tx => {
-//         const project = tx.path.split('/').pop() || 'Unknown';
-//         const amount = parseInt(tx.amount);
-//         if (!projectXPMap[project]) projectXPMap[project] = 0;
-//         projectXPMap[project] += amount;
-//     });
-
-//     return Object.entries(projectXPMap)
-//         .map(([project, xp]) => ({ project, xp }))
-//         .sort((a, b) => b.xp - a.xp);
-// }
 
 export function switchToDashboard() {
     document.body.innerHTML = "";

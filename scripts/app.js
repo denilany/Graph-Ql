@@ -2,8 +2,11 @@ import { LoginUI } from "./pages/login.js";
 import { Auth } from "./auth.js";
 import { gsap } from 'gsap';
 import * as Dashboard from './dashboard.js';
+import { GraphQLService } from './graphql.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+const GraphQl = new GraphQLService();
+
+document.addEventListener('DOMContentLoaded', async () => {
     const auth = new Auth();
 
     if (!auth.checkAuth()) {
@@ -51,6 +54,18 @@ document.addEventListener('DOMContentLoaded', () => {
             auth.logout();
             renderLoginPage();
         });
+
+        const userResponse = await GraphQl.getUserInfo();
+
+        // console.log("response: ", userResponse.transaction);
+
+        document.getElementById("graph-selector").addEventListener('change', function (e) {
+            const selectedValue = e.target.value;
+            Dashboard.updateGraph(selectedValue, userResponse.transaction);
+            console.log("Selected value:", selectedValue);
+        });
+
+        Dashboard.updateGraph('xp-progress', userResponse.transaction);
     }    
 });
 

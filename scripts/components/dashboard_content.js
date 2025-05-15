@@ -62,28 +62,6 @@ export class DashboardContent {
                     </div>
                 </section>
 
-                <!-- Grades Section -->
-                <section id="grades-section" class="dashboard-section">
-                    <h2>My Grades</h2>
-                    <div class="grades-table-container">
-                        <table class="grades-table">
-                            <thead>
-                                <tr>
-                                    <th>Project Name</th>
-                                    <th>Grade</th>
-                                    <th>Status</th>
-                                    <th>Completion Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="grades-table-body">
-                                <tr>
-                                    <td colspan="4" class="loading-row">Loading grades...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
                 <!-- Skills Section -->
                 <section id="skills-section" class="dashboard-section">
                     <h2>My Skills</h2>
@@ -112,23 +90,7 @@ export class DashboardContent {
                             <p id="audits-ratio">Loading...</p>
                         </div>
                     </div>
-                    <div class="audits-table-container">
-                        <table class="audits-table">
-                            <thead>
-                                <tr>
-                                    <th>Project</th>
-                                    <th>Type</th>
-                                    <th>Grade</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="audits-table-body">
-                                <tr>
-                                    <td colspan="4" class="loading-row">Loading audits...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    
                 </section>
             </div>
         </div>

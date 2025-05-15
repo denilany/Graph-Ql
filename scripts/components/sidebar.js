@@ -10,7 +10,6 @@ export class SideBar {
                 <ul>
                     <li class="active" data-section="profile"><i class="fas fa-user"></i> Profile</li>
                     <li data-section="statistics"><i class="fas fa-chart-line"></i> Statistics</li>
-                    <li data-section="grades"><i class="fas fa-graduation-cap"></i> Grades</li>
                     <li data-section="skills"><i class="fas fa-code"></i> Skills</li>
                     <li data-section="audits"><i class="fas fa-clipboard-check"></i> Audits</li>
                 </ul>

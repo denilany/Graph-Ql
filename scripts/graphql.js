@@ -53,6 +53,9 @@ export class GraphQLService {
                     path
                     type
                 }
+                progress {
+                    grade
+                }
                 
             }
         `;

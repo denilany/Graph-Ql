@@ -137,10 +137,10 @@ export function updateGraph(graphType, data) {
     try {
         switch (graphType) {
             case 'xp-progress':
-                Graph.createLineGraph(data, container);
+                Graph.createLineGraph(data.transaction, container);
                 break;
             case 'project-ratio':
-                Graph.createPieChart(data, container);
+                Graph.createPieChart(data.progress, container);
                 break;
             
         }

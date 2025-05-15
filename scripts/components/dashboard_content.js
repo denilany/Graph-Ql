@@ -59,8 +59,8 @@ export class DashboardContent {
                             <option value="project-ratio">Project Success Ratio</option>
                         </select>
                     </div>
-                    <div class="graph-container">
-                        <svg id="stats-graph" width="100%" height="400"></svg>
+                    <div class="graph-container" id="graph-container">
+                        <!-- Render graphs dynamically -->
                     </div>
                 </section>
 

@@ -54,8 +54,6 @@ export class DashboardContent {
                     <div class="stats-controls">
                         <select id="graph-selector">
                             <option value="xp-progress">XP Progress Over Time</option>
-                            <option value="project-xp">XP by Project</option>
-                            <option value="audit-ratio">Audit Ratio</option>
                             <option value="project-ratio">Project Success Ratio</option>
                         </select>
                     </div>

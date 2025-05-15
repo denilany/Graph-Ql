@@ -140,7 +140,16 @@ export function updateGraph(graphType, data) {
                 Graph.createLineGraph(data.transaction, container);
                 break;
             case 'project-ratio':
-                Graph.createPieChart(data.progress, container);
+                const stats = data.progress.reduce(
+                    (acc, curr) => {
+                      if (curr.grade > 0) acc.pass++;
+                      else acc.fail++;
+                      return acc;
+                    },
+                    { pass: 0, fail: 0 }
+                  );
+                  
+                Graph.createPieChart(stats, container);
                 break;
             
         }

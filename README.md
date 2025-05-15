@@ -85,7 +85,7 @@ This project involves creating a personalized profile page that displays your sc
 
 ### 5. Hosting
 - **Options**:
-  - **Vercel**: Fast deployment with modern tooling.
+- **Vercel**: Fast deployment with modern tooling. [Live Demo](https://graph-a90u561qk-denilanys-projects.vercel.app)
 
 ## Example Code Snippets
 

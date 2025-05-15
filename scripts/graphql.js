@@ -85,35 +85,23 @@ export class GraphQLService {
     }
 
     // Get completed projects
-    async getCompletedProjects() {
+    async getCompletedProjects(userId, eventId = 75) {
         const query = `
-            {
+            query GetCompletedProjects($userId: Int!, $eventId: Int!) {
                 pendingProgress: progress(
-                                where: {
-                                    isDone: { _eq: true },
-                                    eventId: { _eq: 75 },
-                                    id: { _neq: 145124 }
-                                }
-                            ) {
-                                createdAt
-                                path
-                            }
+                    where: {
+                        isDone: { _eq: true },
+                        eventId: { _eq: $eventId },
+                        userId: { _eq: $userId },
+                        id: { _neq: 145124 }
+                    }
+                ) {
+                    createdAt
+                    path
+                }
             }
         `;
-        return this.query(query);
-    }
-
-    // Get user audits
-    async getUserAudits() {
-        const query = `
-        {
-            user {
-                auditRatio
-            }
-        }
-                    
-        `;
-        return this.query(query);
+        return this.query(query, { userId, eventId });
     }
 
     // Get user skills
@@ -131,28 +119,6 @@ export class GraphQLService {
                     }
                 }
                 
-            }
-        `;
-        return this.query(query);
-    }
-
-    // Get project pass/fail ratio
-    async getProjectRatio() {
-        const query = `
-            query {
-                user {
-                    id
-                    passedProjects: progresses_aggregate(where: {isDone: {_eq: true}, grade: {_gte: 1}}) {
-                        aggregate {
-                            count
-                        }
-                    }
-                    failedProjects: progresses_aggregate(where: {isDone: {_eq: true}, grade: {_eq: 0}}) {
-                        aggregate {
-                            count
-                        }
-                    }
-                }
             }
         `;
         return this.query(query);

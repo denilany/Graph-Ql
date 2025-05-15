@@ -66,8 +66,9 @@ async function getUserData() {
 }
 
 async function completedProjects() {
+    const userId = JSON.parse(localStorage.getItem('auth_user_id'));
     try {
-        const projectsResponse = await GraphQl.getCompletedProjects();
+        const projectsResponse = await GraphQl.getCompletedProjects(userId);
 
         if (!projectsResponse) {
             throw new Error("Invalid response format: ", projectsResponse.message);

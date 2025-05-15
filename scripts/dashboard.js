@@ -148,7 +148,7 @@ export function updateGraph(graphType, data) {
                     },
                     { pass: 0, fail: 0 }
                   );
-                  
+
                 Graph.createPieChart(stats, container);
                 break;
             
@@ -211,7 +211,7 @@ async function updateProfile(stats, userData) {
 
 // Update skills chart
 function updateSkillsChart(userData) {
-    console.log("userdata: ", userData);
+    // console.log("userdata: ", userData);
 
     const skillsChart = document.getElementById("skills-chart");
     const skills = userData.user[0].skills;

@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById("graph-selector").addEventListener('change', function (e) {
             const selectedValue = e.target.value;
             Dashboard.updateGraph(selectedValue, userResponse);
-            console.log("Selected value:", selectedValue);
+            // console.log("Selected value:", selectedValue);
         });
 
         Dashboard.updateGraph('xp-progress', userResponse);

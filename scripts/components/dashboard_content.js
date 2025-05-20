@@ -24,8 +24,10 @@ export class DashboardContent {
                                 <i class="fas fa-user-circle"></i>
                             </div>
                             <div class="profile-info">
-                                <h3 id="profile-name">Loading...</h3>
-                                <p id="profile-email">Loading...</p>
+                                <h3 id="profile-name">Loading...</h3><br />
+                                <p id="profile-email">Loading...</p><br />
+                                <p id="phone-number">Loading...</p><br />
+                                <p id="birth-date">Loading...</p><br />
                             </div>
                         </div>
                         <div class="profile-details">

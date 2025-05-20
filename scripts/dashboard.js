@@ -45,6 +45,8 @@ async function getUserData() {
             email: user.email,
             auditRatio: user.auditRatio,
             firstName: attrs?.firstName || "Unknown",
+            phone: attrs?.phone,
+            dateOfBirth: attrs.dateOfBirth,
             allXp,
             done,
             received,
@@ -205,6 +207,10 @@ async function updateProfile(stats, userData) {
     document.getElementById('user-greeting').textContent = `Hello, ${userData.firstName}`;
     document.getElementById('profile-name').textContent = `${userData.login}`;
     document.getElementById('profile-email').textContent = userData.email;
+    document.getElementById('phone-number').textContent = userData.phone;
+    const date = new Date(userData.dateOfBirth);
+    document.getElementById('birth-date').textContent = date.toDateString();
+    
     document.getElementById('profile-xp').textContent = `${stats.xp}`;
     document.getElementById('profile-projects').textContent = `${stats.projects}`;
     document.getElementById('profile-audit-ratio').textContent = userData.auditRatio.toFixed(1);
